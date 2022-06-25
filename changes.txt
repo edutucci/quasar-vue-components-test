@@ -1,0 +1,22 @@
+﻿1 - Vue2 dependences changed to Vue3
+- vue3-draggable
+- @vuepic/vue-datepicker
+
+2 - The Prop value has been changed to modelValue
+
+3 - VueExcelEditor component changes
+
+==================================================
+The value in data() is used instead of prop value
+==================================================
+mounted() {
+  this.value = this.modelValue
+  ...
+}
+
+==================================================
+Added new events:
+==================================================
+unSelect - when a row is unSelected. Instead of select.
+deleteSelectedRecords - when the method toggleSelectAllRecords is fired. Instead of select.
+
