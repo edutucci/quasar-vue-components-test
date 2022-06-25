@@ -13,6 +13,14 @@
 | unSelect              | selectIdArray, direction    | Emit when rows are unselected |
 | deleteSelectedRecords | selectIdArray               | Emit when rows are selected and click on icon delete top left grid |
 
+## Events List Changed
+
+### Event Component: vue-excel-editor
+
+| Name                  | Arguments                   | Description |
+| :---                  | :---                        | :---        |
+| select                | selectIdArray, direction    | Emit when rows are selected |
+
 ## Getting started
 
 In your template
