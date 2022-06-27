@@ -1968,15 +1968,15 @@ export default defineComponent({
     },
     toggleSelectAllRecords (e) {
       if (e) e.preventDefault()
-      if (this.selectedCount > 0) { this.clearAllSelected('deleteSelectedRecords') } else {
+      if (this.selectedCount > 0) { this.clearAllSelected() } else {
         for (let i = 0; i < this.table.length; i++) { this.selectRecord(i) }
         this.selectedCount = this.table.length
       }
     },
-    clearAllSelected (eventName = 'unSelect') {
+    clearAllSelected () {
       // for (let i = 0; i < this.$refs.systable.children[2].children.length; i++)
       //  this.unSelectRecord(this.pageTop + i)
-      if (this.selectedCount > 0) { this.$emit(eventName, Object.keys(this.selected).map((rowPos) => Number(rowPos)), false) }
+      if (this.selectedCount > 0) { this.$emit('unSelect', Object.keys(this.selected).map((rowPos) => Number(rowPos)), false) }
       this.selected = {}
       this.selectedCount = 0
     },

@@ -18,5 +18,3 @@ mounted() {
 Added new events:
 ==================================================
 unSelect - when a row is unSelected. Instead of select.
-deleteSelectedRecords - when the method toggleSelectAllRecords is fired. Instead of select.
-

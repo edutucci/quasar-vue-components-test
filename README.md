@@ -11,7 +11,6 @@
 | Name                  | Arguments                   | Description |
 | :---                  | :---                        | :---        |
 | unSelect              | selectIdArray, direction    | Emit when rows are unselected |
-| deleteSelectedRecords | selectIdArray               | Emit when rows are selected and click on icon delete top left grid |
 
 ## Events List Changed
 

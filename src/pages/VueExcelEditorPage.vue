@@ -2,11 +2,17 @@
 q-page(padding)
   <h6>VUE EXCEL EDITOR</h6>
 
-  VueExcelEditor(v-model="models.rows"
+  .row
+    .col-auto
+      q-btn(size="sm" label="Restore" @click="models.rows = models.restore")
+    .col-auto
+      q-btn(size="sm" v-if="countRowsToDelete > 0" label="Delete" @click="deleteSelectedRows")
+
+  VueExcelEditor.q-mt-sm(v-model="models.rows"
     ref="grid"
     @select="rowSelected"
     @unSelect="unSelect"
-    @deleteSelectedRecords="deleteSelectedRecords"
+    @update="cellUpdate"
   )
     VueExcelColumn(field="user" label="User")
     VueExcelColumn(field="name" label="Name")
@@ -18,7 +24,7 @@ q-page(padding)
 
 <script>
 
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 // import { useRoute } from 'vue-router'
 import VueExcelEditor from '../components/VueExcelEditor/VueExcelEditor'
 
@@ -30,32 +36,54 @@ export default {
     const grid = ref(null)
     const models = reactive({
       rows: [
-        { id: 0, user: 'hc', name: 'Harry Cole', phone: '1-415-2345678', gender: 'M', age: 25, birth: '1997-07-01', remove: false },
-        { id: 1, user: 'sm', name: 'Simon Minolta', phone: '1-123-7675682', gender: 'M', age: 20, birth: '1999-11-12', remove: false },
-        { id: 2, user: 'ra', name: 'Raymond Atom', phone: '1-456-9981212', gender: 'M', age: 19, birth: '2000-06-11', remove: false },
-        { id: 3, user: 'ag', name: 'Mary George', phone: '1-556-1245684', gender: 'F', age: 22, birth: '2002-08-01', remove: false },
-        { id: 4, user: 'kl', name: 'Kenny Linus', phone: '1-891-2345685', gender: 'M', age: 29, birth: '1990-09-01', remove: false }
+        { user: 'hc', name: 'Harry Cole', phone: '1-415-2345678', gender: 'M', age: 25, birth: '1997-07-01', remove: false },
+        { user: 'sm', name: 'Simon Minolta', phone: '1-123-7675682', gender: 'M', age: 20, birth: '1999-11-12', remove: false },
+        { user: 'ra', name: 'Raymond Atom', phone: '1-456-9981212', gender: 'M', age: 19, birth: '2000-06-11', remove: false },
+        { user: 'ag', name: 'Mary George', phone: '1-556-1245684', gender: 'F', age: 22, birth: '2002-08-01', remove: false },
+        { user: 'kl', name: 'Kenny Linus', phone: '1-891-2345685', gender: 'M', age: 29, birth: '1990-09-01', remove: false }
+      ],
+      restore: [
+        { user: 'hc', name: 'Harry Cole', phone: '1-415-2345678', gender: 'M', age: 25, birth: '1997-07-01', remove: false },
+        { user: 'sm', name: 'Simon Minolta', phone: '1-123-7675682', gender: 'M', age: 20, birth: '1999-11-12', remove: false },
+        { user: 'ra', name: 'Raymond Atom', phone: '1-456-9981212', gender: 'M', age: 19, birth: '2000-06-11', remove: false },
+        { user: 'ag', name: 'Mary George', phone: '1-556-1245684', gender: 'F', age: 22, birth: '2002-08-01', remove: false },
+        { user: 'kl', name: 'Kenny Linus', phone: '1-891-2345685', gender: 'M', age: 29, birth: '1990-09-01', remove: false }
       ]
     })
 
     onMounted(async () => {
     })
 
+    const setRowsToDelete = (rows, deleteMode) => {
+      for (let idx = 0; idx < rows.length; idx++) {
+        models.rows[rows[idx]].remove = deleteMode
+        // console.log(rows[idx])
+      }
+    }
+
+    const countRowsToDelete = computed(() => {
+      return (models.rows.filter(row => row.remove === true)).length > 0
+    })
+
     return {
+      countRowsToDelete,
       grid,
       models,
-      rowSelected: (value) => {
-        console.log('row selected: ', JSON.stringify(value))
-        // // console.log('rows: ', JSON.stringify(models.rows))
+      setRowsToDelete,
+      rowSelected: (rows) => {
+        console.log('row selected: ', JSON.stringify(rows))
 
-        // const rowSelected = grid.value.getSelectedRecords()
-        // console.log('rowSelected: ', JSON.stringify(rowSelected))
+        setRowsToDelete(rows, true)
       },
-      unSelect: (value) => {
-        console.log('row unSelected: ', JSON.stringify(value))
+      unSelect: (rows) => {
+        console.log('row unSelected: ', JSON.stringify(rows))
+        setRowsToDelete(rows, false)
       },
-      deleteSelectedRecords: (value) => {
-        console.log('deleteSelectedRecords: ', JSON.stringify(value))
+      deleteSelectedRows: (value) => {
+        models.rows = models.rows.filter(row => row.remove === false)
+      },
+      cellUpdate: (value) => {
+        console.log('cellUpdate: ', JSON.stringify(value))
       }
     }
   }
