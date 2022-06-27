@@ -20,6 +20,15 @@
 | :---                  | :---                        | :---        |
 | select                | selectIdArray, direction    | Emit when rows are selected |
 
+## Behavior
+
+### Event Component: vue-excel-editor
+
+| Name                  | Arguments                   | Description |
+| :---                  | :---                        | :---        |
+| cell-click            | row selection               | Rows are unselected |
+| update                | updateItemArray             | added $rowPos |
+
 ## Getting started
 
 In your template

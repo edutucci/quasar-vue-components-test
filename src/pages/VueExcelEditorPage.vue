@@ -13,6 +13,7 @@ q-page(padding)
     @select="rowSelected"
     @unSelect="unSelect"
     @update="cellUpdate"
+    @cellClick="cellClick"
   )
     VueExcelColumn(field="user" label="User")
     VueExcelColumn(field="name" label="Name")
@@ -71,19 +72,32 @@ export default {
       models,
       setRowsToDelete,
       rowSelected: (rows) => {
-        console.log('row selected: ', JSON.stringify(rows))
-
         setRowsToDelete(rows, true)
       },
       unSelect: (rows) => {
-        console.log('row unSelected: ', JSON.stringify(rows))
         setRowsToDelete(rows, false)
       },
       deleteSelectedRows: (value) => {
         models.rows = models.rows.filter(row => row.remove === false)
       },
       cellUpdate: (value) => {
-        console.log('cellUpdate: ', JSON.stringify(value))
+        const fieldName = value[0] ? value[0].field.name : ''
+        const rowPos = (value[0]) ? value[0].$rowPos : -1
+
+        if (rowPos > -1) {
+          switch (fieldName) {
+            case 'birth':
+              if ((rowPos + 1) < (models.rows.length)) {
+                grid.value.moveTo(rowPos + 1, 0)
+              }
+              break
+          }
+        }
+      },
+      cellClick: (value) => {
+      },
+      moveTo: (value) => {
+        grid.value.moveTo(3, 0)
       }
     }
   }

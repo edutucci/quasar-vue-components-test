@@ -2091,6 +2091,7 @@ export default defineComponent({
         const row = e.target.parentNode
         const colPos = Array.from(row.children).indexOf(e.target) - 1
         const rowPos = Array.from(row.parentNode.children).indexOf(row)
+        this.clearAllSelected()
         this.$emit('cell-click', { rowPos, colPos })
         this.moveInputSquare(rowPos, colPos)
         if (this.currentField && this.currentField.link && e.altKey) { setTimeout(() => this.currentField.link(this.currentCell.textContent, this.currentRecord, rowPos, colPos, this.currentField, this)) }
@@ -2366,6 +2367,7 @@ export default defineComponent({
         default:
           throw new Error('Invalid row argument type')
       }
+
       switch (field.constructor.name) {
         case 'String': // field name
           field = this.fields.find((f) => f.name === field)
@@ -2391,6 +2393,8 @@ export default defineComponent({
 
       row[field.name] = newVal
 
+      const rowPos = this.value.findIndex(vr => vr.$id === row.$id)
+
       setTimeout(() => {
         const transaction = {
           $id: row.$id,
@@ -2400,7 +2404,8 @@ export default defineComponent({
           field,
           oldVal: typeof oldVal !== 'undefined' ? oldVal : '',
           newVal,
-          err: ''
+          err: '',
+          $rowPos: rowPos
         }
 
         if (field.validate !== null) transaction.err = field.validate(newVal, oldVal, row, field)
