@@ -332,6 +332,7 @@ export default defineComponent({
     noMouseScroll: { type: Boolean, default: false },
     page: { type: Number, default: 0 }, // prefer page size, auto-cal if not provided
     enterToSouth: { type: Boolean, default: false }, // default enter to south
+    enterToNextRow: { type: Boolean, default: false }, // default enter to next row
     nFilterCount: { type: Number, default: 1000 }, // show top n values in filter dialog
     height: { type: String, default: '' },
     width: { type: String, default: '100%' },
@@ -397,7 +398,8 @@ export default defineComponent({
       default () {
         return true
       }
-    }
+    },
+    multiUpdate: { type: Boolean, default: false }
   },
   data () {
     return {
@@ -1321,7 +1323,7 @@ export default defineComponent({
           case 40: // Down Arrow
             if (!this.focused) return
             e.preventDefault()
-            if (this.autocompleteInputs.length === 0) { this.moveSouth(e) } else
+            if (this.autocompleteInputs.length === 0) { this.moveSouth(e); this.$emit('onKeyDown', { keyCode: e.keyCode, rowPos: this.currentRowPos }) } else
             if (this.autocompleteSelect < this.autocompleteInputs.length - 1) {
               this.autocompleteSelect++
               if (this.autocompleteSelect >= 10) {
@@ -1334,6 +1336,7 @@ export default defineComponent({
           case 13: // Enter
             if (!this.focused) return
             e.preventDefault()
+            this.$emit('onKeyDown', { keyCode: e.keyCode, rowPos: this.currentRowPos })
             if (this.autocompleteInputs.length === 0 || this.autocompleteSelect === -1) {
               if (this.enterToSouth) { this.moveSouth(e) } else { this.moveEast(e) }
             } else if (this.autocompleteSelect !== -1 && this.autocompleteSelect < this.autocompleteInputs.length) {
@@ -1577,6 +1580,9 @@ export default defineComponent({
 
     /* *** Paging *******************************************************************************************
      */
+    hasScroll () {
+      return this.vScroller.buttonHeight < this.vScroller.height
+    },
     refreshPageSize () {
       if (this.$refs.hScroll) {
         const fullWidth = this.systable.getBoundingClientRect().width
@@ -1624,9 +1630,9 @@ export default defineComponent({
       this.calVScroll()
       if (this.$refs.vScrollButton) {
         setTimeout(() => {
-          this.$refs.vScrollButton.classList.add('focus')
           this.lazy(() => {
             if (!this.$refs.vScrollButton) return
+            this.$refs.vScrollButton.classList.add('focus')
             this.$refs.vScrollButton.classList.remove('focus')
           }, 1000)
         })
@@ -1985,6 +1991,11 @@ export default defineComponent({
      */
     moveTo (rowPos, colPos) {
       colPos = colPos || 0
+
+      if ((this.pageTop > rowPos + 1) ||
+        (rowPos > (this.pageTop + this.pageSize))) {
+        this.pageTop = rowPos
+      }
       const done = this.moveInputSquare(rowPos - this.pageTop, colPos)
       this.focused = true
       setTimeout(() => this.inputBox.focus())
@@ -2039,6 +2050,14 @@ export default defineComponent({
         while (this.fields[goColPos].invisible && goColPos < this.fields.length - 1) goColPos++
         if (goColPos === this.fields.length || this.fields[goColPos].invisible) return false
         return this.moveInputSquare(this.currentRowPos, goColPos)
+      } else if (this.enterToNextRow) {
+        if (this.height.trim().length === 0) {
+          if (this.currentRowPos < this.value.length - 1) {
+            this.moveTo(this.currentRowPos + 1, 0)
+          } else {
+            return this.moveInputSquare(this.currentRowPos, this.fields.length - 1)
+          }
+        }
       }
       return false
     },
@@ -2091,7 +2110,9 @@ export default defineComponent({
         const row = e.target.parentNode
         const colPos = Array.from(row.children).indexOf(e.target) - 1
         const rowPos = Array.from(row.parentNode.children).indexOf(row)
-        this.clearAllSelected()
+        if (!this.multiUpdate) {
+          this.clearAllSelected()
+        }
         this.$emit('cell-click', { rowPos, colPos })
         this.moveInputSquare(rowPos, colPos)
         if (this.currentField && this.currentField.link && e.altKey) { setTimeout(() => this.currentField.link(this.currentCell.textContent, this.currentRecord, rowPos, colPos, this.currentField, this)) }
@@ -2672,6 +2693,7 @@ input:focus, input:active:focus, input.active:focus {
   position: relative;
   width: 100%;
   scrollbar-width: none;
+  background: #f4f6f9;
 }
 .table-content :focus {
   outline: none;

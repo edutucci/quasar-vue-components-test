@@ -4,6 +4,12 @@
 
 ******
 
+### Bug fix: vue-excel-editor
+
+| Name                  | Arguments | Description |
+| :---                  | :---      | :---        |
+| moveTo                | Method    | Not working when row number is not showing in grid. |
+
 ## Events List Added
 
 ### Event Component: vue-excel-editor
@@ -28,6 +34,13 @@
 | :---                  | :---                        | :---        |
 | cell-click            | row selection               | Rows are unselected |
 | update                | updateItemArray             | added $rowPos |
+
+### Prop Component added: vue-excel-editor
+
+| Name                  | Arguments       | Type      | Description |
+| :---                  | :---            | :--       | :---        |
+| multiUpdate           | updateItemArray | Boolean   | Update multiple cell information  |
+| enterToNextRow        | Optional        | Boolean   | Go to next line when reach last column  |
 
 ## Getting started
 

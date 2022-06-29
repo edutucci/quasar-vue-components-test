@@ -6,6 +6,7 @@
   "author": "edutucci <edutucci@gmail.com>",
   "private": true,
   "scripts": {
+    "debug": "nodemon --inspect app.js",
     "lint": "eslint --ext .js,.vue ./",
     "test": "echo \"No test specified\" && exit 0"
   },
