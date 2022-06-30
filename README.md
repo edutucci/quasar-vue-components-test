@@ -25,6 +25,7 @@
 | Name                  | Arguments                   | Description |
 | :---                  | :---                        | :---        |
 | select                | selectIdArray, direction    | Emit when rows are selected |
+| onKeyDown             | row                         | Emit when press keys ENTER, UP, DOWN |
 
 ## Behavior
 
@@ -34,6 +35,7 @@
 | :---                  | :---                        | :---        |
 | cell-click            | row selection               | Rows are unselected |
 | update                | updateItemArray             | added $rowPos |
+| Key Tab               | cell focus                  | Fix when table has a scroll |
 
 ### Prop Component added: vue-excel-editor
 

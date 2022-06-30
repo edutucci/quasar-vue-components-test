@@ -7,7 +7,7 @@ q-page(padding)
         .col
           q-btn(size="sm" label="Restore" @click="restore")
           q-btn(size="sm" label="NewRecord" @click="addNewRecord")
-          q-btn(size="sm" v-if="countRowsToDelete > 0" label="Delete" @click="deleteSelectedRows")
+          q-btn(size="sm" v-if="countRowsToDelete > 0" :label="`Delete (${countRowsToDelete})`" @click="deleteSelectedRows")
 
       .row
         .col
@@ -28,6 +28,7 @@ q-page(padding)
             VueExcelColumn(field="gender" label="Gender" type="select" :options="['M', 'F']")
             VueExcelColumn(field="age" label="Age")
             VueExcelColumn(field="birth" label="Birth")
+
     .col-auto(style="max-width: 300px")
       .text-bold.text-h6 Behavior
       hr
@@ -60,6 +61,7 @@ export default {
   setup () {
     const grid = ref(null)
     const models = reactive({
+      rowsToRemove: [],
       multiUpdate: false,
       rows: [
         { user: 'hc', name: 'Harry Cole', phone: '1-415-2345678', gender: 'M', age: 25, birth: '1997-07-01', remove: false },
@@ -87,20 +89,28 @@ export default {
     onMounted(async () => {
     })
 
-    const setRowsToDelete = (rows, deleteMode) => {
+    const setRowsToDelete = (rows) => {
       for (let idx = 0; idx < rows.length; idx++) {
-        models.rows[rows[idx]].remove = deleteMode
-        // console.log(rows[idx])
+        const index = models.rowsToRemove.findIndex(item => item === (rows[idx]))
+        if (index === -1) {
+          models.rowsToRemove.push(rows[idx])
+        } else {
+          models.rowsToRemove.splice(index, 1)
+        }
       }
     }
 
     const countRowsToDelete = computed(() => {
-      return (models.rows.filter(row => row.remove === true)).length > 0
+      return models.rowsToRemove.length
     })
 
     const hasScroll = computed(() => {
       return (grid.value) ? grid.value.hasScroll() : false
     })
+
+    const addNewRecord = () => {
+      grid.value.newRecord({ user: '', name: '', phone: '', gender: '', age: 0, birth: '', remove: false })
+    }
 
     return {
       countRowsToDelete,
@@ -109,11 +119,14 @@ export default {
       setupModels,
       setRowsToDelete,
       hasScroll,
+      addNewRecord,
       restore: () => {
+        models.rowsToRemove = []
         models.rows = []
         models.restore.forEach((rec) => {
           models.rows.push({
             name: rec.name,
+            remove: false,
             phone: rec.phone,
             gender: rec.gender,
             age: rec.age,
@@ -122,16 +135,19 @@ export default {
         })
       },
       rowSelected: (rows) => {
-        setRowsToDelete(rows, true)
+        setRowsToDelete(rows)
       },
       unSelect: (rows) => {
-        setRowsToDelete(rows, false)
+        setRowsToDelete(rows)
       },
-      deleteSelectedRows: (value) => {
-        models.rows = models.rows.filter(row => row.remove === false)
-      },
-      addNewRecord: () => {
-        grid.value.newRecord({}, false)
+      deleteSelectedRows: () => {
+        models.rowsToRemove.forEach(idx => {
+          const localRow = models.rows[idx]
+          if (localRow) { localRow.remove = true }
+        })
+        const localRows = models.rows.filter(row => row.remove === false)
+        models.rows = localRows
+        models.rowsToRemove = []
       },
       cellUpdate: (value) => {
         const fieldName = value[0] ? value[0].field.name : ''
@@ -151,8 +167,15 @@ export default {
         // console.log('cellClick', JSON.stringify(value))
       },
       onKeyDown: (value) => {
-        console.log('onKeyDown', JSON.stringify(value))
-        // grid.value.moveTo(2, 0)
+        // console.log('onKeyDown value: ', JSON.stringify(value))
+        switch (value.key) {
+          case 13:
+          case 40:
+            if (value.rowPos === value.tableLength) {
+              addNewRecord()
+            }
+            break
+        }
       },
 
       // SETUP FUNCTIONS

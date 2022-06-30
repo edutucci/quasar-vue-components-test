@@ -521,9 +521,9 @@ export default defineComponent({
     }
   },
   watch: {
-    modelValue () {
+    modelValue (newValue) {
       this.lazy(() => {
-        this.value = this.modelValue
+        this.value = newValue
         this.refresh()
         if (this.pageTop > this.table.length) { this.lastPage() }
       })
@@ -1288,7 +1288,7 @@ export default defineComponent({
           case 38: // Up Arrow
             if (!this.focused) return
             e.preventDefault()
-            if (this.autocompleteInputs.length === 0) { this.moveNorth() } else
+            if (this.autocompleteInputs.length === 0) { this.onKeyDown(e.keyCode); this.moveNorth() } else
             if (this.autocompleteSelect > 0) {
               this.autocompleteSelect--
               const showTop = this.autocompleteSelect * 23
@@ -1323,7 +1323,7 @@ export default defineComponent({
           case 40: // Down Arrow
             if (!this.focused) return
             e.preventDefault()
-            if (this.autocompleteInputs.length === 0) { this.moveSouth(e); this.$emit('onKeyDown', { keyCode: e.keyCode, rowPos: this.currentRowPos }) } else
+            if (this.autocompleteInputs.length === 0) { this.onKeyDown(e.keyCode); this.moveSouth(e) } else
             if (this.autocompleteSelect < this.autocompleteInputs.length - 1) {
               this.autocompleteSelect++
               if (this.autocompleteSelect >= 10) {
@@ -1336,8 +1336,8 @@ export default defineComponent({
           case 13: // Enter
             if (!this.focused) return
             e.preventDefault()
-            this.$emit('onKeyDown', { keyCode: e.keyCode, rowPos: this.currentRowPos })
             if (this.autocompleteInputs.length === 0 || this.autocompleteSelect === -1) {
+              this.onKeyDown(e.keyCode)
               if (this.enterToSouth) { this.moveSouth(e) } else { this.moveEast(e) }
             } else if (this.autocompleteSelect !== -1 && this.autocompleteSelect < this.autocompleteInputs.length) {
               this.inputAutocompleteText(this.autocompleteInputs[this.autocompleteSelect])
@@ -1416,6 +1416,14 @@ export default defineComponent({
             break
         }
       }
+    },
+    onKeyDown (keycode) {
+      this.$emit('onKeyDown',
+        {
+          key: keycode,
+          rowPos: this.currentRowPos + this.pageTop + 1,
+          tableLength: this.value.length
+        })
     },
 
     /* *** Column Separator *******************************************************************************************
@@ -1989,6 +1997,22 @@ export default defineComponent({
 
     /* *** Cursor *******************************************************************************************
      */
+    moveToPageOrNextLine (rowPos, colPos) {
+      if ((rowPos === (this.pageSize - 1)) && (colPos === this.fields.length - 1)) {
+        return this.moveTo(rowPos + this.pageTop + 1, 0)
+      } else if (this.focused) {
+        let goColPos = colPos
+        let goRow = rowPos
+        if (goColPos < (this.fields.length - 1)) {
+          goColPos = this.currentColPos + 1
+        } else {
+          goRow++
+          goColPos = 0
+        }
+        return this.moveInputSquare(goRow, goColPos)
+      }
+      return true
+    },
     moveTo (rowPos, colPos) {
       colPos = colPos || 0
 
@@ -2045,18 +2069,18 @@ export default defineComponent({
       return false
     },
     moveEast () {
-      if (this.focused && this.currentColPos < this.fields.length - 1) {
+      if (this.hasScroll()) {
+        return this.moveToPageOrNextLine(this.currentRowPos, this.currentColPos)
+      } else if (this.focused && this.currentColPos < this.fields.length - 1) {
         let goColPos = this.currentColPos + 1
         while (this.fields[goColPos].invisible && goColPos < this.fields.length - 1) goColPos++
         if (goColPos === this.fields.length || this.fields[goColPos].invisible) return false
         return this.moveInputSquare(this.currentRowPos, goColPos)
       } else if (this.enterToNextRow) {
-        if (this.height.trim().length === 0) {
-          if (this.currentRowPos < this.value.length - 1) {
-            this.moveTo(this.currentRowPos + 1, 0)
-          } else {
-            return this.moveInputSquare(this.currentRowPos, this.fields.length - 1)
-          }
+        if (this.currentRowPos < this.value.length - 1) {
+          this.moveTo(this.currentRowPos + 1 + this.pageTop, 0)
+        } else {
+          return this.moveInputSquare(this.currentRowPos, this.fields.length - 1)
         }
       }
       return false
