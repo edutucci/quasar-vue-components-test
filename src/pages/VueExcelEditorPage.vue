@@ -11,20 +11,21 @@ q-page(padding)
       .row
         .col
           VueExcelEditor.q-mt-sm(
-            height='300px'
+            height="300px"
             v-model="models.rows"
             ref="grid"
             @select="rowSelected"
             @unSelect="unSelect"
             @update="cellUpdate"
-            @cellClick="cellClick"
             :multiUpdate="models.multiUpdate"
             @onKeyDown="onKeyDown"
+            @beginEdit="onBeginEdit"
+            @endEdit="onEndEdit"
             enterToNextRow
           )
             VueExcelColumn(field="name" label="Name")
-            VueExcelColumn(field="direction" label="Direção" :to-text="directionToText")
-            VueExcelColumn(field="distance" label="Distancia" :to-text="distanceToText")
+            VueExcelColumn(field="direction" label="Direction" :to-text="directionToText")
+            VueExcelColumn(field="distance" label="Distance" :to-text="distanceToText")
 
     .col-auto(style="max-width: 300px")
       .text-bold.text-h6 Behavior
@@ -32,6 +33,8 @@ q-page(padding)
       q-toggle(disable v-model="hasScroll" label="has Scroll?")
       br
       q-toggle(v-model="models.multiUpdate" label="Multi Update")
+      br
+      q-toggle(v-model="models.editingMode" label="Editing cells?")
 
       .text-bold.text-h6 Move To
       hr
@@ -59,6 +62,7 @@ export default {
   setup () {
     const grid = ref(null)
     const models = reactive({
+      editingMode: false,
       rowsToRemove: [],
       multiUpdate: false,
       rows: [
@@ -175,15 +179,19 @@ export default {
           }
         }
       },
-      cellClick: (value) => {
-        // console.log('cellClick', JSON.stringify(value))
+      onBeginEdit: (value) => {
+        console.log('onBeginEdit value: ', value)
+        models.editingMode = true
+      },
+      onEndEdit: (value) => {
+        console.log('onEndEdit value: ', value)
+        models.editingMode = false
       },
       onKeyDown: (value) => {
-        // console.log('onKeyDown value: ', JSON.stringify(value))
         switch (value.key) {
           case 13:
           case 40:
-            if (value.rowPos === value.tableLength) {
+            if (value.rowPos === value.tableLength && !models.editingMode) {
               addNewRecord()
             }
             break

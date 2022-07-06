@@ -1283,6 +1283,7 @@ export default defineComponent({
             } else if (this.inputBox.selectionStart === 0) {
               this.moveWest(e)
               e.preventDefault()
+              this.onCellEdit('endEdit')
             }
             break
           case 38: // Up Arrow
@@ -1298,6 +1299,7 @@ export default defineComponent({
               this.autocompleteSelect = 0
               // this.autocompleteSelect = this.autocompleteInputs.length - 1
             }
+            this.onCellEdit('endEdit')
             break
           case 9: // Tab
             if (!this.focused) return
@@ -1309,6 +1311,7 @@ export default defineComponent({
               if (this.moveSouth(e)) { this.moveToWest(e) } else { return this.inputBoxBlur() };
             }
             e.preventDefault()
+            this.onCellEdit('endEdit')
             break
           case 39: // Right Arrow
             if (!this.focused) return
@@ -1318,13 +1321,17 @@ export default defineComponent({
             } else if (this.inputBox.selectionEnd === this.inputBox.value.length) {
               this.moveEast(e)
               e.preventDefault()
+              this.onCellEdit('endEdit')
             }
             break
           case 40: // Down Arrow
             if (!this.focused) return
             e.preventDefault()
-            if (this.autocompleteInputs.length === 0) { this.onKeyDown(e.keyCode); this.moveSouth(e) } else
-            if (this.autocompleteSelect < this.autocompleteInputs.length - 1) {
+            if (this.autocompleteInputs.length === 0) {
+              this.onKeyDown(e.keyCode)
+              this.moveSouth(e)
+              this.onCellEdit('endEdit')
+            } else if (this.autocompleteSelect < this.autocompleteInputs.length - 1) {
               this.autocompleteSelect++
               if (this.autocompleteSelect >= 10) {
                 const showTop = this.autocompleteSelect * 23 - 206
@@ -1413,6 +1420,7 @@ export default defineComponent({
               setTimeout(this.calAutocompleteList)
             } else { setTimeout(() => this.calAutocompleteList(this.autocompleteInputs.length)) }
             this.inputBoxChanged = true
+            this.onCellEdit('beginEdit')
             break
         }
       }
@@ -1424,6 +1432,9 @@ export default defineComponent({
           rowPos: this.currentRowPos + this.pageTop + 1,
           tableLength: this.value.length
         })
+    },
+    onCellEdit (eventName) {
+      this.$emit(eventName, '')
     },
 
     /* *** Column Separator *******************************************************************************************
@@ -2106,10 +2117,12 @@ export default defineComponent({
       if (this.focused) {
         if (this.currentRowPos + 1 >= this.table.length) {
           if (this.readonly) return false
-          if (!this.newIfBottom) return false
-          this.newRecord({}, false, true)
-          setTimeout(this.moveSouth, 0)
-          return true
+          if (this.newIfBottom) {
+            this.newRecord({}, false, true)
+            setTimeout(this.moveSouth, 0)
+            return true
+          }
+          return this.moveTo(this.currentRowPos, this.currentColPos)
         }
         const done = this.moveInputSquare(this.currentRowPos + 1, this.currentColPos)
         this.calVScroll()
@@ -2321,6 +2334,7 @@ export default defineComponent({
       // Without this, the cell cannot refresh, dont know why
       this.focused = false
       this.focused = true
+      this.onCellEdit('endEdit')
     },
 
     /* *** Update *******************************************************************************************

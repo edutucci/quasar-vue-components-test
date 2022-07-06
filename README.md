@@ -6,9 +6,10 @@
 
 ### Bug fix: vue-excel-editor
 
-| Name                  | Arguments | Description |
-| :---                  | :---      | :---        |
-| moveTo                | Method    | Not working when row number is not showing in grid. |
+| Name                  | Arguments                   | Description |
+| :---                  | :---                        | :---            |
+| moveTo                | Method                      | Not working when row number is not showing in grid. |
+| Arrow Down            | { key, rowPos, tableLength} | Focus to same cell when reach last row if newIfBottom is disabled. |
 
 ## Events List Added
 
@@ -17,6 +18,8 @@
 | Name                  | Arguments                   | Description |
 | :---                  | :---                        | :---        |
 | unSelect              | selectIdArray, direction    | Emit when rows are unselected |
+| beginEdit             | empty                       | Emit when user press a key to edit. |
+| endEdit               | empty                       | Emit when the cell has changed. |
 
 ## Events List Changed
 
