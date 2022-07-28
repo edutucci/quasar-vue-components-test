@@ -2,14 +2,14 @@
   <q-layout view="lHh Lpr lFf">
     <q-header elevated>
       <q-toolbar>
-        <!-- <q-btn
+        <q-btn
           flat
           dense
           round
           icon="menu"
           aria-label="Menu"
           @click="toggleLeftDrawer"
-        /> -->
+        />
 
         <q-toolbar-title>
           Quasar App
@@ -19,7 +19,7 @@
       </q-toolbar>
     </q-header>
 
-    <!-- <q-drawer
+    <q-drawer
       v-model="leftDrawerOpen"
       show-if-above
       bordered
@@ -33,7 +33,7 @@
           </q-item-section>
         </q-item>
       </q-list>
-    </q-drawer> -->
+    </q-drawer>
 
     <q-page-container>
       <router-view />
@@ -60,6 +60,14 @@ export default defineComponent({
           label: 'Vue Excel Editor',
           visible: false,
           path: '/vueexcel',
+          beta: true
+        },
+        {
+          id: 'tuccigrid',
+          icon: '',
+          label: 'VueEdtGrid',
+          visible: true,
+          path: '/vueedtgrid',
           beta: true
         }
       ]

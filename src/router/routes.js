@@ -4,7 +4,8 @@ const routes = [
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/VueExcelEditorPage.vue') }
+      { path: '', component: () => import('pages/VueExcelEditorPage.vue') },
+      { path: '/vueedtgrid', component: () => import('pages/VueEdtGridPage.vue') }
     ]
   },
   // { path: '/1', component: () => import('pages/IndexPage.vue') },
