@@ -26,7 +26,8 @@ module.exports = configure(function (ctx) {
     boot: [
       'i18n',
       'axios',
-      'vueExcelEditor'
+      'vueExcelEditor',
+      'revoGrid'
     ],
 
     // https://v2.quasar.dev/quasar-cli-webpack/quasar-config-js#Property%3A-css
@@ -80,6 +81,17 @@ module.exports = configure(function (ctx) {
           .test(/\.pug$/)
           .use('pug-plain-loader')
           .loader('pug-plain-loader')
+
+        chain.module
+          .rule('vue')
+          .use('vue-loader')
+          .tap((options) => {
+            options.compilerOptions = {
+              ...options.compilerOptions,
+              isCustomElement: (tag) => tag.startsWith('revo-grid')
+            }
+            return options
+          })
       }
 
     },

@@ -1257,6 +1257,11 @@
   dependencies:
     serialize-javascript "^5.0.1"
 
+"@revolist/revogrid@^3.1.8":
+  version "3.1.8"
+  resolved "https://registry.yarnpkg.com/@revolist/revogrid/-/revogrid-3.1.8.tgz#832d2872e4122ff32c8e013ac44044c407c7507e"
+  integrity sha512-OwlrrOGl9/UcZZNcxIM76rahpSa1Lj7Zyhf3yjtTUZ9xf8nAMCJmN7AhZoi27PpKTSZW47qj2svEgv+ZtMMByA==
+
 "@trysound/sax@0.2.0":
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/@trysound/sax/-/sax-0.2.0.tgz#cccaab758af56761eb7bf37af6f03f326dd798ad"

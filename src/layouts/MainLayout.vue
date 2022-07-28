@@ -55,6 +55,14 @@ export default defineComponent({
     const models = reactive({
       menuList: [
         {
+          id: 'tuccigrid',
+          icon: '',
+          label: 'VueEdtGrid',
+          visible: true,
+          path: '/vueedtgrid',
+          beta: true
+        },
+        {
           id: 'vueexceleditor',
           icon: '',
           label: 'Vue Excel Editor',
@@ -63,11 +71,11 @@ export default defineComponent({
           beta: true
         },
         {
-          id: 'tuccigrid',
+          id: 'revogrid',
           icon: '',
-          label: 'VueEdtGrid',
+          label: 'Revo Grid',
           visible: true,
-          path: '/vueedtgrid',
+          path: '/revogrid',
           beta: true
         }
       ]
