@@ -1262,6 +1262,11 @@
   resolved "https://registry.yarnpkg.com/@revolist/revogrid/-/revogrid-3.1.8.tgz#832d2872e4122ff32c8e013ac44044c407c7507e"
   integrity sha512-OwlrrOGl9/UcZZNcxIM76rahpSa1Lj7Zyhf3yjtTUZ9xf8nAMCJmN7AhZoi27PpKTSZW47qj2svEgv+ZtMMByA==
 
+"@revolist/vue3-datagrid@^3.1.0":
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/@revolist/vue3-datagrid/-/vue3-datagrid-3.1.0.tgz#052a335d12823b70b40016f8447e1876572236c9"
+  integrity sha512-U0B/u3WBPnMxZT91W+CA3us1SlJBrWjuG1+dyrq5XCKm8Qmol2UPphElXVSiIfYWTAe2QecQ/iBwcXnzN+vwaQ==
+
 "@trysound/sax@0.2.0":
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/@trysound/sax/-/sax-0.2.0.tgz#cccaab758af56761eb7bf37af6f03f326dd798ad"

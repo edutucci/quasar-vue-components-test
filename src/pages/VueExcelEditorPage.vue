@@ -1,7 +1,5 @@
 <template lang="pug">
 q-page(padding)
-  div
-    | {{models.rows}}
   .row
     .col
       .row

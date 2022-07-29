@@ -1,6 +1,6 @@
 <template lang="pug">
 q-page (padding)
-  .text-bold.text-h6 Revo Grid Stencil
+  .text-bold.text-h6 Revo Grid Vue
 
   .row.q-mt-md.items-center
     .col-auto
@@ -10,11 +10,11 @@ q-page (padding)
     //- .col-auto
     //-   q-btn(size="sm" :disabled="countRowsToDelete === 0" label="Excluir Linhas" @click="deleteSelectedRows")
 
-  revo-grid(
+  VGrid(
     ref="grid"
     style="height: 300px; width: 100%;"
-    :columns.prop="models.columns"
-    :source.prop="models.items"
+    :columns="models.columns"
+    :source="models.items"
     @afteredit="afteredit"
     @beforeedit="beforeedit"
   )
@@ -23,8 +23,12 @@ q-page (padding)
 
 <script>
 import { defineComponent, onMounted, ref, reactive, computed } from 'vue'
+import VGrid from '@revolist/vue3-datagrid'
 
 export default defineComponent({
+  components: {
+    VGrid
+  },
   setup () {
     const models = reactive({
       columns: [

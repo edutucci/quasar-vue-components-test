@@ -73,9 +73,17 @@ export default defineComponent({
         {
           id: 'revogrid',
           icon: '',
-          label: 'Revo Grid',
+          label: 'Revo Grid Stencil',
           visible: true,
           path: '/revogrid',
+          beta: true
+        },
+        {
+          id: 'revogrid',
+          icon: '',
+          label: 'Revo Grid Vue',
+          visible: true,
+          path: '/revogridvue',
           beta: true
         }
       ]
