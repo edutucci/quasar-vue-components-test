@@ -10,20 +10,23 @@ q-page (padding)
     //- .col-auto
     //-   q-btn(size="sm" :disabled="countRowsToDelete === 0" label="Excluir Linhas" @click="deleteSelectedRows")
 
-  VGrid(
-    ref="grid"
-    style="height: 300px; width: 100%;"
-    :columns="models.columns"
-    :source="models.items"
-    @afteredit="afteredit"
-    @beforeedit="beforeedit"
-  )
+  .row.q-mt-md
+    .col
+      VGrid(
+        ref="grid"
+        style="height: 300px; width: 100%;"
+        :columns="models.columns"
+        :source="models.items"
+        @afteredit="afteredit"
+        @beforeedit="beforeedit"
+      )
 
 </template>
 
 <script>
 import { defineComponent, onMounted, ref, reactive, computed } from 'vue'
 import VGrid from '@revolist/vue3-datagrid'
+import { Format, Units } from 'formatum'
 
 export default defineComponent({
   components: {
@@ -31,22 +34,7 @@ export default defineComponent({
   },
   setup () {
     const models = reactive({
-      columns: [
-        // first column with dropdown
-        {
-          // binding prop
-          prop: 'name',
-          // column name
-          name: 'First',
-          // column size
-          size: 150
-        },
-        {
-          prop: 'details',
-          name: 'Second column',
-          size: 200
-        }
-      ],
+      columns: [],
       items: [
         {
           name: 'Source',
@@ -58,19 +46,88 @@ export default defineComponent({
 
     const grid = ref()
     onMounted(() => {
-      // grid = document.querySelector('revo-grid')
+      const columns = [
+        {
+          prop: 'delete',
+          size: 30,
+          cellTemplate: (h, props) => {
+            return h(
+              'i',
+              {
+                class: {
+                  'fas fa-trash-alt': true
+                },
+                style: {
+                  cursor: 'pointer'
+                },
+                onClick: () => deleteSelectedRow(props.rowIndex)
+              },
+              ''
+            )
+          }
+        },
+        {
+          name: 'Nome',
+          prop: 'name',
+          width: 'auto'
+        },
+        {
+          name: 'Direção',
+          prop: 'direction',
+          width: 140,
+          cellTemplate: (createElement, props) => {
+            return createElement(
+              'div',
+              {
 
-      // rows collection
+              },
+              directionToText(props.model[props.prop])
+            )
+          }
+        },
+        {
+          name: 'Distância',
+          prop: 'distance',
+          width: 120,
+          cellTemplate: (createElement, props) => {
+            return createElement(
+              'div',
+              {
 
-      // define your custom column type here
-      // grid.columnTypes = {
-      //   select: new window.RevoGridColumnSelect.CreateSelectColumnType()
-      // }
-      // apply columns
-      // grid.value.columns = columns
-      // apply rows
-      // grid.value.source = items
+              },
+              distanceToText(props.model[props.prop])
+            )
+          }
+        }
+      ]
+
+      models.columns = [...columns]
     })
+
+    const directionToText = (value) => {
+      try {
+        return Format.valueToUnit(value, Units.DegreeMinuteSecond)
+      } catch (error) {
+        return Format.valueToUnit(0, Units.DegreeMinuteSecond)
+      }
+    }
+
+    const distanceToText = (value) => {
+      try {
+        return Format.valueToUnit(value, Units.Meters)
+      } catch (error) {
+        return Format.valueToUnit(0, Units.Meters)
+      }
+    }
+
+    const deleteSelectedRow = async (rowIndex) => {
+      const localRow = models.reconstObject.vertices[rowIndex]
+      if (localRow) { localRow.remove = true }
+
+      const localRows = models.reconstObject.vertices.filter(row => row.remove === false)
+      models.reconstObject.vertices = localRows
+      models.rowsToRemove = []
+    }
 
     const countRowsToDelete = computed(() => {
       return models.rowsToRemove.length
@@ -82,6 +139,7 @@ export default defineComponent({
         name: 'Mouse',
         details: 'My big mouse'
       })
+      models.items = [...models.items]
     }
 
     return {
